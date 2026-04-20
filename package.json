@@ -1,7 +1,7 @@
 {
   "name": "@verevoir/qrcode",
-  "version": "1.0.0",
-  "description": "Drop-in, zero-dependency replacement for node-qrcode. Same API, 10 visual styles, TypeScript-first, isomorphic (Node, browser, edge).",
+  "version": "1.0.1",
+  "description": "QR code generator with 10 visual styles. Zero dependencies, TypeScript, isomorphic across Node, browsers, and edge runtimes.",
   "homepage": "https://verevoir.io",
   "license": "MIT",
   "type": "module",
@@ -37,25 +37,13 @@
     "web.d.ts"
   ],
   "keywords": [
-    "qrcode",
     "qr",
     "qr-code",
-    "qr-generator",
-    "qr-code-generator",
-    "node-qrcode",
     "svg",
-    "svg-qr",
-    "styled-qr",
+    "png",
     "typescript",
-    "zero-dependencies",
-    "drop-in",
     "isomorphic",
-    "browser",
-    "edge",
-    "cloudflare-workers",
-    "deno",
-    "bun",
-    "png"
+    "zero-dependencies"
   ],
   "dependencies": {
     "@verevoir/qr": "^2.0.0"
