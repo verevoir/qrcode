@@ -1,7 +1,7 @@
 {
   "name": "@verevoir/qrcode",
-  "version": "1.0.1",
-  "description": "QR code generator with 10 visual styles. Zero dependencies, TypeScript, isomorphic across Node, browsers, and edge runtimes.",
+  "version": "1.0.2",
+  "description": "QR code generator with 13 visual styles. Zero dependencies, TypeScript, isomorphic across Node, browsers, and edge runtimes.",
   "homepage": "https://verevoir.io",
   "license": "MIT",
   "type": "module",

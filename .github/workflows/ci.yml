@@ -1,0 +1,63 @@
+name: CI
+
+# @verevoir/qrcode is a hand-written re-export stub for @verevoir/qr/qrcode.
+# The published files are committed directly, so there is nothing to lint,
+# build, or test here — the behaviour under test lives in @verevoir/qr.
+# This workflow exists only to publish on a version change, so releases go
+# through CI with provenance rather than from a laptop.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write # create the release tag
+  packages: write # publish to GitHub Packages
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      # Smoke test: the stub must actually resolve and re-export.
+      - run: npm install --no-save @verevoir/qr
+      - run: node -e "import('./index.js').then(m => { if (typeof m.toString !== 'function') { throw new Error('stub does not re-export toString'); } console.log('stub resolves'); })"
+
+      - name: Check if version changed
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        id: version
+        run: |
+          CURRENT=$(node -p "require('./package.json').version")
+          echo "current=$CURRENT" >> "$GITHUB_OUTPUT"
+
+          if git rev-parse "v$CURRENT" >/dev/null 2>&1; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish to GitHub Packages
+        if: steps.version.outputs.changed == 'true'
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> ~/.npmrc
+          npm publish --registry=https://npm.pkg.github.com --tag latest
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create git tag
+        if: steps.version.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "v${{ steps.version.outputs.current }}"
+          git push origin "v${{ steps.version.outputs.current }}"
