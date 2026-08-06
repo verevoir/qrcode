@@ -1,0 +1,83 @@
+# @verevoir/qrcode
+
+> Thin compatibility shim around `@verevoir/qr` that exposes the same method names as the `qrcode` npm package — one runtime dependency, runs standalone in Node, browsers, and edge runtimes.
+
+## Install
+
+```bash
+npm install @verevoir/qrcode
+```
+
+For PNG output, also install the optional peer dependency:
+
+```bash
+npm install @verevoir/qrcode @resvg/resvg-js
+```
+
+## Core Exports
+
+### Isomorphic entry (default)
+
+Re-exports everything from `@verevoir/qr/qrcode`. Covers `create`, `toString`, and `toDataURL` — works in Node, browsers, Cloudflare Workers, Deno, and Bun.
+
+```typescript
+import QRCode from '@verevoir/qrcode';
+
+// SVG string
+const svg = await QRCode.toString('https://verevoir.io', { type: 'svg' });
+
+// With a visual style (square | dots | diamonds | horizontal | vertical |
+// diagonal | network | circuit | metro | scribble | photo | logo | color-logo)
+const styled = await QRCode.toString('https://verevoir.io', {
+  type: 'svg',
+  style: 'dots',
+});
+
+// Data URL (SVG or PNG — PNG requires @resvg/resvg-js)
+const dataUrl = await QRCode.toDataURL('https://verevoir.io');
+
+// Low-level matrix
+const qr = QRCode.create('https://verevoir.io');
+```
+
+### Node entry (`@verevoir/qrcode/node`)
+
+Re-exports everything from `@verevoir/qr/qrcode/node`. Adds `toFile` and `toBuffer` on top of the isomorphic surface.
+
+```typescript
+import QRCode from '@verevoir/qrcode/node';
+
+// Write SVG to disk
+await QRCode.toFile('code.svg', 'https://verevoir.io', { type: 'svg' });
+
+// Write PNG to disk (requires @resvg/resvg-js)
+await QRCode.toFile('code.png', 'https://verevoir.io', { type: 'png' });
+
+// PNG as a Buffer (requires @resvg/resvg-js)
+const buf = await QRCode.toBuffer('https://verevoir.io');
+```
+
+### Web entry (`@verevoir/qrcode/web`)
+
+Re-exports everything from `@verevoir/qr/qrcode/web`. Adds `toCanvas` for browser use.
+
+```typescript
+import QRCode from '@verevoir/qrcode/web';
+
+const canvas = document.getElementById('qr') as HTMLCanvasElement;
+await QRCode.toCanvas(canvas, 'https://verevoir.io');
+```
+
+## Notes
+
+- **This package is a re-export shim.** All logic lives in [`@verevoir/qr`](https://www.npmjs.com/package/@verevoir/qr). If you need multi-candidate mask ranking, fine-grained colour control, or fabrication-ready layer separation, use that package directly.
+- **Thirteen visual styles** are available via the `style` option: `square`, `dots`, `diamonds`, `horizontal`, `vertical`, `diagonal`, `network`, `circuit`, `metro`, `scribble`, `photo`, `logo`, `color-logo`. The `photo`, `logo`, and `color-logo` styles require a `PhotoSampler` and are not reachable through this shim — use `@verevoir/qr` directly for those.
+- **`version` and `maskPattern` options are accepted but ignored.** The engine selects the optimal version and mask automatically.
+- **`color.dark` / `color.light` are reliable on `square` only.** Other styles use SVG path construction where colour substitution is less predictable.
+- **Callback forms are supported.** Every method accepts an `(err, result)` callback as its last argument in addition to returning a Promise.
+
+## Limitations
+
+- PNG output requires the optional peer dependency `@resvg/resvg-js`. Without it, PNG calls throw `Module not found` at runtime.
+- `toFile` and `toBuffer` are Node-only (the `/node` entry point). They are not present on the isomorphic or web entries.
+- `toCanvas` is browser-only (the `/web` entry point).

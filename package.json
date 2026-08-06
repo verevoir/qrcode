@@ -34,7 +34,8 @@
     "node.d.ts",
     "web.js",
     "web.cjs",
-    "web.d.ts"
+    "web.d.ts",
+    "llms.txt"
   ],
   "keywords": [
     "qr",
