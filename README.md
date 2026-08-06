@@ -1,6 +1,6 @@
 # @verevoir/qrcode
 
-Zero-dependency QR code library with ten visual styles. API-compatible with the existing `qrcode` ecosystem — same method names, same call shapes — so code that already uses a QR library can swap to this one by changing the import.
+Zero-dependency QR code library with thirteen visual styles. API-compatible with the existing `qrcode` ecosystem — same method names, same call shapes — so code that already uses a QR library can swap to this one by changing the import.
 
 ```bash
 npm install @verevoir/qrcode
